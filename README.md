@@ -1,16 +1,18 @@
 # CompeTenza Document Portal
 
-A standalone document-submission form for CompeTenza applicants. Modeled on the
-WhiteRock document form pattern: a 3-step wizard collects applicant details
-and documents, converts images/docx/txt to PDF in the browser, and hands
-everything to a Google Apps Script backend that saves files to Drive and
-sends email notifications — no server of your own to run.
+A standalone document-submission form for CompeTenza applicants, styled and
+laid out to match the main site's `/apply/` page (single page, numbered
+sections, one file slot per document type). Instead of that page's
+Cloudflare R2 + D1 backend, this one hands everything to a Google Apps
+Script that saves files to Drive and sends email notifications — no server
+of your own to run.
 
 ## How it works
 
-1. Applicant fills in **Your Details** (name, email, phone, destination,
-   program, etc.) and **Upload Documents** (drag-and-drop, tagging each file
-   as Passport / Certificate / Transcript / CV / Other).
+1. Applicant fills in **1 · Personal Information**, **2 · Your Goal**
+   (destination + program, drawn from the same list as the main site), and
+   **3 · Documents** — one upload slot each for Passport, Certificates,
+   Transcript, CV, and an Other/catch-all slot.
 2. Converted to PDF client-side, in the browser, before upload:
    - images (jpg/png/gif/bmp/webp) → wrapped in a one-page PDF (`jsPDF`)
    - `.docx` → converted to HTML (`mammoth`) then rendered to PDF
@@ -23,12 +25,16 @@ sends email notifications — no server of your own to run.
    as-is with their original extension.
 3. Every file is renamed to `(Student Name) - Document Type.pdf` before
    upload.
-4. On submit, everything is POSTed as JSON to a Google Apps Script Web App
-   (see `apps-script/Code.gs`), which:
-   - saves the files into a Drive folder named after the applicant,
+4. On submit, a client-generated reference ID (`CTZ-XXXXXX`, same style as
+   the main site's Application ID) plus everything else is POSTed as JSON to
+   a Google Apps Script Web App (see `apps-script/Code.gs`), which:
+   - saves the files into a Drive folder named after the applicant and
+     reference ID,
    - emails `ADMIN_EMAIL` with the application details and every document
      attached,
    - sends the applicant a separate confirmation email.
+5. The success screen shows the reference ID and a "Continue on WhatsApp"
+   button, matching the main site's post-submit experience.
 
 ## One-time setup (per Gmail inbox that should receive applications)
 

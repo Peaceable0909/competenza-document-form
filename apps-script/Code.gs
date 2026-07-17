@@ -34,7 +34,12 @@ function doPost(e) {
     sendAdminNotification(applicant, folder, savedFiles);
     sendApplicantConfirmation(applicant, folder);
 
-    return jsonResponse({ success: true, driveUrl: folder.getUrl(), fileCount: savedFiles.length });
+    return jsonResponse({
+      success: true,
+      referenceId: applicant.referenceId || "",
+      driveUrl: folder.getUrl(),
+      fileCount: savedFiles.length,
+    });
   } catch (err) {
     return jsonResponse({ success: false, error: String(err && err.message ? err.message : err) });
   }
@@ -48,7 +53,8 @@ function getOrCreateApplicantFolder(applicant) {
   const root = getOrCreateFolder(DriveApp.getRootFolder(), ROOT_FOLDER_NAME);
   const destinationFolder = getOrCreateFolder(root, applicant.destination || "Unspecified");
   const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HHmm");
-  const folderName = applicant.fullName + " — " + stamp;
+  const ref = applicant.referenceId ? applicant.referenceId + " — " : "";
+  const folderName = ref + applicant.fullName + " — " + stamp;
   return destinationFolder.createFolder(folderName);
 }
 
@@ -69,15 +75,14 @@ function sendAdminNotification(applicant, folder, files) {
   const body = [
     "New application received.",
     "",
+    "Reference ID: " + (applicant.referenceId || "—"),
     "Name: " + applicant.fullName,
     "Email: " + applicant.email,
     "Phone: " + applicant.phone,
+    "Country of residence: " + (applicant.country || "—"),
     "Destination: " + applicant.destination,
-    "Program: " + applicant.program,
-    "City: " + (applicant.city || "—"),
-    "Gender: " + (applicant.gender || "—"),
-    "Date of birth: " + (applicant.dob || "—"),
-    "Age: " + (applicant.age || "—"),
+    "Program: " + (applicant.program || "—"),
+    "Notes: " + (applicant.message || "—"),
     "",
     "Documents (" + files.length + "):",
     files.map((f) => "- " + f.getName()).join("\n"),
@@ -87,7 +92,7 @@ function sendAdminNotification(applicant, folder, files) {
 
   MailApp.sendEmail({
     to: ADMIN_EMAIL,
-    subject: "New Application — " + applicant.fullName + " (" + applicant.destination + ")",
+    subject: "New Application " + (applicant.referenceId ? "[" + applicant.referenceId + "] " : "") + "— " + applicant.fullName + " (" + applicant.destination + ")",
     body: body,
     attachments: files.map((f) => f.getBlob()),
   });
@@ -97,7 +102,8 @@ function sendApplicantConfirmation(applicant, folder) {
   const body = [
     "Hi " + applicant.fullName + ",",
     "",
-    "We've received your application and documents for " + applicant.program + " in " + applicant.destination + ".",
+    "We've received your application and documents for " + (applicant.program || "your program") + " in " + applicant.destination + ".",
+    "Your reference ID is " + (applicant.referenceId || "—") + " — save this for any conversation with us.",
     "A counselor will review your profile and be in touch on WhatsApp or email within 24–48 hours.",
     "",
     "Thank you for choosing CompeTenza Business Services.",
@@ -105,7 +111,7 @@ function sendApplicantConfirmation(applicant, folder) {
 
   MailApp.sendEmail({
     to: applicant.email,
-    subject: "We've received your CompeTenza application",
+    subject: "We've received your CompeTenza application" + (applicant.referenceId ? " — " + applicant.referenceId : ""),
     body: body,
   });
 }

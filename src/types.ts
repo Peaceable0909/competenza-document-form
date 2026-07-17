@@ -1,35 +1,38 @@
-export type DocumentType = "Passport" | "Certificate" | "Transcript" | "CV" | "Other";
+export type DocSlotKey = "passport" | "certificate" | "transcript" | "cv" | "other";
 
-export const DOCUMENT_TYPES: DocumentType[] = ["Passport", "Certificate", "Transcript", "CV", "Other"];
+export type DocSlotDef = {
+  key: DocSlotKey;
+  label: string;
+  hint: string;
+};
+
+export const DOC_SLOTS: DocSlotDef[] = [
+  { key: "passport", label: "International Passport", hint: "Data page — PDF or clear photo" },
+  { key: "certificate", label: "Certificates", hint: "Secondary school / degree certificate" },
+  { key: "transcript", label: "Transcript", hint: "Academic transcript if available" },
+  { key: "cv", label: "CV / Resume", hint: "Optional but recommended" },
+  { key: "other", label: "Other Document", hint: "Anything else worth attaching" },
+];
 
 export type StagedFile = {
-  id: string;
   file: File;
-  docType: DocumentType;
   /** filled in once client-side PDF conversion finishes */
-  status: "pending" | "converting" | "ready" | "error";
+  status: "converting" | "ready" | "error";
   /** the final PDF blob that gets uploaded (original file if it was already a PDF) */
   pdfBlob?: Blob;
-  finalName?: string;
   errorMessage?: string;
 };
+
+export type DocSlots = Partial<Record<DocSlotKey, StagedFile>>;
 
 export type ApplicantDetails = {
   fullName: string;
   email: string;
   phone: string;
+  country: string;
   destination: string;
   program: string;
-  city: string;
-  gender: string;
-  dob: string;
-  age: string;
+  message: string;
 };
 
-export type SubmitStage =
-  | "idle"
-  | "converting"
-  | "uploading"
-  | "emailing"
-  | "done"
-  | "error";
+export type SubmitStage = "idle" | "submitting" | "done" | "error";
