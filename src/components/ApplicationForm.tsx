@@ -18,6 +18,14 @@ const EMPTY_DETAILS: ApplicantDetails = {
   message: "",
 };
 
+// The main site links here as ?destination=<slug> (e.g. from Hot Cakes offers
+// or a destination page's "Apply Now") — honor that as a starting value.
+function initialDetails(): ApplicantDetails {
+  const slug = new URLSearchParams(window.location.search).get("destination");
+  const match = destinations.find((d) => d.slug === slug);
+  return match ? { ...EMPTY_DETAILS, destination: match.name } : EMPTY_DETAILS;
+}
+
 const inputCls =
   "mt-1.5 w-full rounded-xl border border-line bg-white px-4 py-3 text-sm font-medium outline-none transition-all focus:border-study focus:ring-4 focus:ring-study-soft";
 const labelCls = "block text-sm font-bold";
@@ -27,7 +35,7 @@ const legendCls = "px-2 font-display text-lg font-bold";
 const WHATSAPP = "https://wa.me/2340000000000";
 
 export default function ApplicationForm({ onOpenSetup }: { onOpenSetup?: () => void }) {
-  const [details, setDetails] = useState<ApplicantDetails>(EMPTY_DETAILS);
+  const [details, setDetails] = useState<ApplicantDetails>(initialDetails);
   const [slots, setSlots] = useState<DocSlots>({});
   const [stage, setStage] = useState<SubmitStage>("idle");
   const [error, setError] = useState("");
