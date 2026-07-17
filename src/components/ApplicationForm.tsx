@@ -25,7 +25,7 @@ const legendCls = "px-2 font-display text-lg font-bold";
 
 const WHATSAPP = "https://wa.me/2340000000000";
 
-export default function ApplicationForm({ onOpenSetup }: { onOpenSetup: () => void }) {
+export default function ApplicationForm({ onOpenSetup }: { onOpenSetup?: () => void }) {
   const [details, setDetails] = useState<ApplicantDetails>(EMPTY_DETAILS);
   const [slots, setSlots] = useState<DocSlots>({});
   const [stage, setStage] = useState<SubmitStage>("idle");
@@ -56,7 +56,11 @@ export default function ApplicationForm({ onOpenSetup }: { onOpenSetup: () => vo
     e.preventDefault();
     const scriptUrl = getScriptUrl();
     if (!scriptUrl) {
-      onOpenSetup();
+      if (onOpenSetup) {
+        onOpenSetup();
+      } else {
+        setError("Applications aren't open yet — please check back shortly or message us on WhatsApp.");
+      }
       return;
     }
     setError("");
@@ -214,13 +218,15 @@ export default function ApplicationForm({ onOpenSetup }: { onOpenSetup: () => vo
         Submitting is free. Your documents are saved to Google Drive and CompeTenza Admissions is notified by
         email.
       </p>
-      <button
-        type="button"
-        onClick={onOpenSetup}
-        className="mx-auto flex items-center gap-1.5 text-xs font-semibold text-ink-mute hover:text-ink"
-      >
-        <Settings2 className="h-3.5 w-3.5" /> Google Drive & Email setup
-      </button>
+      {onOpenSetup && (
+        <button
+          type="button"
+          onClick={onOpenSetup}
+          className="mx-auto flex items-center gap-1.5 text-xs font-semibold text-ink-mute hover:text-ink"
+        >
+          <Settings2 className="h-3.5 w-3.5" /> Google Drive & Email setup
+        </button>
+      )}
     </form>
   );
 }

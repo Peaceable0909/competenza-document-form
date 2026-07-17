@@ -4,6 +4,12 @@ import ApplicationForm from "./components/ApplicationForm";
 import SetupModal from "./components/SetupModal";
 import { getScriptUrl } from "./lib/storage";
 
+// The Setup UI (button, banner, modal) is a dev-only tool for configuring the
+// Google Apps Script URL locally. The live site gets its URL baked in at
+// build time via the VITE_APPS_SCRIPT_URL Vercel env var, so applicants
+// never see any of this.
+const SHOW_SETUP_UI = import.meta.env.DEV;
+
 export default function App() {
   const [setupOpen, setSetupOpen] = useState(false);
   const [connected, setConnected] = useState(false);
@@ -20,16 +26,18 @@ export default function App() {
             <h1 className="font-display text-lg font-extrabold text-ink">CompeTenza Document Portal</h1>
             <p className="text-xs text-ink-mute">Document Submission Portal</p>
           </div>
-          <button
-            onClick={() => setSetupOpen(true)}
-            className="flex items-center gap-1.5 rounded-full border border-line px-3.5 py-2 text-xs font-bold text-ink-soft hover:bg-surface"
-          >
-            <Settings2 className="h-3.5 w-3.5" /> Setup
-          </button>
+          {SHOW_SETUP_UI && (
+            <button
+              onClick={() => setSetupOpen(true)}
+              className="flex items-center gap-1.5 rounded-full border border-line px-3.5 py-2 text-xs font-bold text-ink-soft hover:bg-surface"
+            >
+              <Settings2 className="h-3.5 w-3.5" /> Setup
+            </button>
+          )}
         </div>
       </header>
 
-      {!connected && (
+      {SHOW_SETUP_UI && !connected && (
         <div className="mx-auto mt-4 max-w-2xl px-5">
           <p className="rounded-xl bg-orange-50 px-4 py-3 text-sm font-semibold text-hot-deep">
             Setup required: click "Setup" above to connect your Google Apps Script URL so documents save to Drive
@@ -48,10 +56,12 @@ export default function App() {
           </p>
         </div>
 
-        <ApplicationForm onOpenSetup={() => setSetupOpen(true)} />
+        <ApplicationForm onOpenSetup={SHOW_SETUP_UI ? () => setSetupOpen(true) : undefined} />
       </main>
 
-      {setupOpen && <SetupModal onClose={() => setSetupOpen(false)} onSaved={() => setConnected(true)} />}
+      {SHOW_SETUP_UI && setupOpen && (
+        <SetupModal onClose={() => setSetupOpen(false)} onSaved={() => setConnected(true)} />
+      )}
     </div>
   );
 }

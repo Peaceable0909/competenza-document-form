@@ -50,10 +50,21 @@ of your own to run.
    files and send mail.
 5. Copy the Web App URL (starts with
    `https://script.google.com/macros/s/.../exec`).
-6. Open the deployed site, click **Setup** in the header, paste the URL in,
-   and **Save & Connect**. It's stored in the browser's `localStorage`, so
-   each device/browser that submits from this form needs to do this once
-   (or you deploy it once and share the same connected build).
+
+### Connecting the URL
+
+There's no visible "Setup" UI on the live site — applicants never see
+anything about Google Apps Script. The URL is baked into the production
+build as a Vercel environment variable:
+
+- Vercel dashboard → this project → **Settings → Environment Variables** →
+  add `VITE_APPS_SCRIPT_URL` (Production) with the Web App URL as the
+  value → redeploy (env var changes need a redeploy to take effect, since
+  Vite bakes it in at build time).
+
+For **local development only**, `npm run dev` still shows a "Setup" button,
+banner, and modal that save the URL to the browser's `localStorage` — handy
+for testing a new script version before wiring it up as the real env var.
 
 Re-running step 3/4 after editing `Code.gs` requires a **new** deployment
 version (Deploy → Manage deployments → edit → new version) — just saving the
