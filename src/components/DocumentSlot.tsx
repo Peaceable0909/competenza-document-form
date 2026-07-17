@@ -9,10 +9,12 @@ export default function DocumentSlot({
   def,
   staged,
   onChange,
+  onPreview,
 }: {
   def: DocSlotDef;
   staged: StagedFile | undefined;
   onChange: (file: StagedFile | undefined) => void;
+  onPreview: (blob: Blob, fileName: string) => void;
 }) {
   const [thumbUrl, setThumbUrl] = useState<string | null>(null);
 
@@ -37,10 +39,7 @@ export default function DocumentSlot({
 
   function openPreview() {
     if (!staged) return;
-    const blob = staged.pdfBlob ?? staged.file;
-    const url = URL.createObjectURL(blob);
-    window.open(url, "_blank", "noopener,noreferrer");
-    setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    onPreview(staged.pdfBlob ?? staged.file, staged.file.name);
   }
 
   return (

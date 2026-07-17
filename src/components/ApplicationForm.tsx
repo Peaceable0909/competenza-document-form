@@ -6,6 +6,7 @@ import { buildSubmissionPayload } from "../lib/payload";
 import { getScriptUrl } from "../lib/storage";
 import { makeReferenceId } from "../lib/referenceId";
 import DocumentSlot from "./DocumentSlot";
+import PreviewModal, { type PreviewFile } from "./PreviewModal";
 
 const EMPTY_DETAILS: ApplicantDetails = {
   fullName: "",
@@ -31,6 +32,15 @@ export default function ApplicationForm({ onOpenSetup }: { onOpenSetup?: () => v
   const [stage, setStage] = useState<SubmitStage>("idle");
   const [error, setError] = useState("");
   const [result, setResult] = useState<{ referenceId: string; driveUrl: string } | null>(null);
+  const [preview, setPreview] = useState<PreviewFile | null>(null);
+
+  function openPreview(blob: Blob, fileName: string) {
+    setPreview({ url: URL.createObjectURL(blob), fileName, mimeType: blob.type });
+  }
+  function closePreview() {
+    if (preview) URL.revokeObjectURL(preview.url);
+    setPreview(null);
+  }
 
   const dest = destinations.find((d) => d.name === details.destination);
   const set = <K extends keyof ApplicantDetails>(key: K, value: ApplicantDetails[K]) =>
@@ -196,7 +206,13 @@ export default function ApplicationForm({ onOpenSetup }: { onOpenSetup?: () => v
         </p>
         <div className="grid gap-5 sm:grid-cols-2">
           {DOC_SLOTS.map((s) => (
-            <DocumentSlot key={s.key} def={s} staged={slots[s.key]} onChange={(f) => setSlot(s.key, f)} />
+            <DocumentSlot
+              key={s.key}
+              def={s}
+              staged={slots[s.key]}
+              onChange={(f) => setSlot(s.key, f)}
+              onPreview={openPreview}
+            />
           ))}
         </div>
       </fieldset>
@@ -227,6 +243,7 @@ export default function ApplicationForm({ onOpenSetup }: { onOpenSetup?: () => v
           <Settings2 className="h-3.5 w-3.5" /> Google Drive & Email setup
         </button>
       )}
+      {preview && <PreviewModal file={preview} onClose={closePreview} />}
     </form>
   );
 }
