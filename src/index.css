@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: #111827;
-  --color-ink-soft: #4b5563;
+  --color-ink: #191c1e;
+  --color-ink-soft: #434655;
   --color-ink-mute: #6b7280;
-  --color-line: #e5e7eb;
-  --color-surface: #f8fafc;
-  --color-navy: #111827;
+  --color-line: #e0e3e5;
+  --color-surface: #f7f9fb;
+  --color-navy: #191c1e;
 
   --color-study: #2563eb;
   --color-study-deep: #1d4ed8;
@@ -25,4 +25,22 @@ body {
   font-family: var(--font-sans);
   color: var(--color-ink);
   background: var(--color-surface);
+}
+
+@keyframes stamp-pop {
+  0% {
+    transform: scale(0) rotate(-20deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15) rotate(-8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(-8deg);
+    opacity: 1;
+  }
+}
+.animate-stamp {
+  animation: stamp-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }

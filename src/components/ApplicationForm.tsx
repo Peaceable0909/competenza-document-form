@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AlertTriangle, ExternalLink, Loader2, MessageCircle, PartyPopper, Settings2 } from "lucide-react";
+import { AlertTriangle, ExternalLink, Loader2, MapPin, MessageCircle, PartyPopper, Settings2 } from "lucide-react";
 import { destinations } from "../data/destinations";
 import { DOC_SLOTS, type ApplicantDetails, type DocSlotKey, type DocSlots, type StagedFile, type SubmitStage } from "../types";
 import { buildSubmissionPayload } from "../lib/payload";
@@ -98,37 +98,48 @@ export default function ApplicationForm({ onOpenSetup }: { onOpenSetup?: () => v
 
   if (stage === "done" && result) {
     return (
-      <div className="mx-auto max-w-xl rounded-3xl border border-emerald-200 bg-emerald-50 p-10 text-center shadow-xl">
-        <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-500 text-white" aria-hidden="true">
-          <PartyPopper className="h-8 w-8" />
-        </span>
-        <h2 className="mt-4 font-display text-2xl font-extrabold">Application Received!</h2>
-        <p className="mt-3 text-ink-soft">Your Reference ID is</p>
-        <p className="mt-2 inline-block rounded-2xl bg-white px-6 py-3 font-display text-2xl font-extrabold tracking-widest text-study shadow">
-          {result.referenceId}
-        </p>
-        <p className="mt-4 text-sm leading-relaxed text-ink-soft">
-          Save this ID — you&apos;ll use it in every conversation with us. Your documents were saved to Google
-          Drive and CompeTenza Admissions has been emailed. A counselor will contact you within 24–48 hours.
-        </p>
-        {result.driveUrl && (
-          <a
-            href={result.driveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-study underline"
-          >
-            View on Google Drive <ExternalLink className="h-3.5 w-3.5" />
-          </a>
-        )}
-        <a
-          href={`${WHATSAPP}?text=${encodeURIComponent(`Hello! I just applied. My Reference ID is ${result.referenceId}.`)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-6 flex items-center justify-center gap-2 rounded-full bg-green-500 px-7 py-3.5 font-bold text-white shadow-lg shadow-green-500/30 transition-transform hover:-translate-y-0.5"
-        >
-          <MessageCircle className="h-5 w-5" aria-hidden="true" /> Continue on WhatsApp
-        </a>
+      <div className="mx-auto max-w-md">
+        <div className="relative overflow-hidden rounded-3xl border border-line bg-white shadow-xl">
+          <div className="p-8 text-center">
+            <span className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-emerald-500 text-white" aria-hidden="true">
+              <PartyPopper className="h-7 w-7" />
+            </span>
+            <h2 className="mt-4 font-display text-xl font-extrabold text-ink">Application Received!</h2>
+            <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+              Your documents were saved to Google Drive and CompeTenza Admissions has been emailed. A counselor
+              will contact you within 24–48 hours.
+            </p>
+          </div>
+
+          <div className="relative border-t-2 border-dashed border-line">
+            <span className="absolute -left-3 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-surface" aria-hidden="true" />
+            <span className="absolute -right-3 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full bg-surface" aria-hidden="true" />
+          </div>
+
+          <div className="p-8 pt-6 text-center">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-ink-mute">Your Reference ID</p>
+            <p className="mt-2 font-display text-2xl font-extrabold tracking-[0.2em] text-study">{result.referenceId}</p>
+            <p className="mt-3 text-xs text-ink-soft">Save this — you&apos;ll use it in every conversation with us.</p>
+            {result.driveUrl && (
+              <a
+                href={result.driveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-study underline"
+              >
+                View on Google Drive <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            )}
+            <a
+              href={`${WHATSAPP}?text=${encodeURIComponent(`Hello! I just applied. My Reference ID is ${result.referenceId}.`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-5 flex items-center justify-center gap-2 rounded-full bg-green-500 px-7 py-3.5 font-bold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] shadow-lg shadow-green-500/30 transition-transform hover:-translate-y-0.5"
+            >
+              <MessageCircle className="h-5 w-5" aria-hidden="true" /> Continue on WhatsApp
+            </a>
+          </div>
+        </div>
       </div>
     );
   }
@@ -141,7 +152,7 @@ export default function ApplicationForm({ onOpenSetup }: { onOpenSetup?: () => v
         </p>
       )}
 
-      <fieldset className={fieldsetCls}>
+      <fieldset id="section-personal" className={fieldsetCls}>
         <legend className={legendCls}>1 · Personal Information</legend>
         <div className="grid gap-5 sm:grid-cols-2">
           <label className={`${labelCls} sm:col-span-2`}>
@@ -163,11 +174,27 @@ export default function ApplicationForm({ onOpenSetup }: { onOpenSetup?: () => v
         </div>
       </fieldset>
 
-      <fieldset className={fieldsetCls}>
+      <fieldset id="section-goal" className={fieldsetCls}>
         <legend className={legendCls}>2 · Your Goal</legend>
         <div className="grid gap-5 sm:grid-cols-2">
-          <label className={labelCls}>
-            Preferred Destination *
+          <div className="sm:col-span-2">
+            <span className={labelCls}>Preferred Destination *</span>
+            <div className="mt-1.5 flex flex-wrap gap-2">
+              {destinations.map((d) => (
+                <button
+                  key={d.slug}
+                  type="button"
+                  onClick={() => set("destination", d.name)}
+                  className={`inline-flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs font-bold transition-colors ${
+                    details.destination === d.name
+                      ? "border-study bg-study text-white"
+                      : "border-study/20 bg-study-soft text-study hover:border-study/50"
+                  }`}
+                >
+                  <MapPin className="h-3 w-3" aria-hidden="true" /> {d.name}
+                </button>
+              ))}
+            </div>
             <select className={inputCls} value={details.destination} onChange={(e) => set("destination", e.target.value)}>
               <option value="" disabled>Select a destination…</option>
               {destinations.map((d) => (
@@ -175,8 +202,8 @@ export default function ApplicationForm({ onOpenSetup }: { onOpenSetup?: () => v
               ))}
               <option value="Not sure yet">Not sure yet — advise me</option>
             </select>
-          </label>
-          <label className={labelCls}>
+          </div>
+          <label className={`${labelCls} sm:col-span-2`}>
             Preferred Program
             <select className={inputCls} value={details.program} onChange={(e) => set("program", e.target.value)} disabled={!dest}>
               <option value="">{dest ? "Select a program…" : "Choose a destination first"}</option>
@@ -198,7 +225,7 @@ export default function ApplicationForm({ onOpenSetup }: { onOpenSetup?: () => v
         </div>
       </fieldset>
 
-      <fieldset className={fieldsetCls}>
+      <fieldset id="section-documents" className={fieldsetCls}>
         <legend className={legendCls}>3 · Documents</legend>
         <p className="mb-5 text-xs font-semibold text-ink-soft">
           Images, DOCX and TXT are converted to PDF automatically. Don&apos;t have everything? Submit what you
@@ -220,7 +247,7 @@ export default function ApplicationForm({ onOpenSetup }: { onOpenSetup?: () => v
       <button
         type="submit"
         disabled={!canSubmit}
-        className="w-full rounded-full bg-study px-8 py-4 font-display text-lg font-extrabold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-full bg-study px-8 py-4 font-display text-lg font-extrabold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.25)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
       >
         {stage === "submitting" ? (
           <span className="inline-flex items-center gap-2">

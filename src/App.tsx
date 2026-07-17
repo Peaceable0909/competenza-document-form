@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Settings2 } from "lucide-react";
+import { Compass, Settings2 } from "lucide-react";
 import ApplicationForm from "./components/ApplicationForm";
 import SetupModal from "./components/SetupModal";
+import FlightPath from "./components/FlightPath";
 import { getScriptUrl } from "./lib/storage";
 
 // The Setup UI (button, banner, modal) is a dev-only tool for configuring the
@@ -22,9 +23,14 @@ export default function App() {
     <div className="min-h-screen bg-surface">
       <header className="border-b border-line bg-white">
         <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
-          <div>
-            <h1 className="font-display text-lg font-extrabold text-ink">CompeTenza Document Portal</h1>
-            <p className="text-xs text-ink-mute">Document Submission Portal</p>
+          <div className="flex items-center gap-2.5">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-study text-white">
+              <Compass className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <div>
+              <h1 className="font-display text-lg font-extrabold text-ink">CompeTenza</h1>
+              <p className="text-xs text-ink-mute">Document Submission Portal</p>
+            </div>
           </div>
           {SHOW_SETUP_UI && (
             <button
@@ -46,8 +52,17 @@ export default function App() {
         </div>
       )}
 
+      <FlightPath />
+
       <main className="mx-auto max-w-2xl px-5 py-10">
-        <div className="mb-8 text-center">
+        <div className="relative mb-8 text-center">
+          <svg
+            viewBox="0 0 240 24"
+            className="pointer-events-none absolute left-1/2 top-full mt-1 h-6 w-60 -translate-x-1/2 text-hot/40"
+            aria-hidden="true"
+          >
+            <path d="M4 4 C 60 4, 60 20, 120 20 S 180 4, 236 4" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="1 7" strokeLinecap="round" />
+          </svg>
           <h2 className="font-display text-2xl font-extrabold text-ink sm:text-3xl">
             Start Your <span className="text-study">Application</span>
           </h2>

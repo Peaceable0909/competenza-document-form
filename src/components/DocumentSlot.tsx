@@ -42,51 +42,65 @@ export default function DocumentSlot({
     onPreview(staged.pdfBlob ?? staged.file, staged.file.name);
   }
 
+  const isReady = staged?.status === "ready";
+  const isError = staged?.status === "error";
+
   return (
-    <label className="block text-sm font-bold">
-      {def.label}
-      <input
-        type="file"
-        accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.webp,.docx,.txt,.doc,.rtf,.ppt,.pptx,.xls,.xlsx"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleFile(file);
-          e.target.value = "";
-        }}
-        className="mt-1.5 w-full cursor-pointer rounded-xl border border-dashed border-line bg-surface px-4 py-3 text-xs font-medium file:mr-3 file:rounded-full file:border-0 file:bg-doc file:px-4 file:py-1.5 file:text-xs file:font-bold file:text-white hover:border-study"
-      />
-      <span className="mt-1 block text-[11px] font-medium text-ink-soft">{def.hint}</span>
-      {staged && (
+    <div className="relative">
+      {isReady && (
         <span
-          className={`mt-1 flex items-center gap-1.5 text-[11px] font-semibold ${
-            staged.status === "error" ? "text-urgent" : staged.status === "ready" ? "text-success" : "text-study"
-          }`}
+          className="animate-stamp absolute -right-2 -top-2 z-10 grid h-7 w-7 place-items-center rounded-full border-2 border-success bg-white text-success shadow-sm"
+          aria-hidden="true"
         >
-          {thumbUrl && <img src={thumbUrl} alt="" className="h-6 w-6 shrink-0 rounded-md border border-line object-cover" />}
-          {staged.status === "converting" && <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" aria-hidden="true" />}
-          {staged.status === "ready" && <CheckCircle2 className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />}
-          {staged.status === "error" && <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />}
-          <span className="truncate">{staged.status === "error" ? staged.errorMessage : staged.file.name}</span>
-          {staged.status !== "error" && (
-            <button
-              type="button"
-              onClick={openPreview}
-              aria-label={`Preview ${def.label}`}
-              className="ml-auto shrink-0 rounded-lg p-0.5 text-study hover:bg-white"
-            >
-              <Eye className="h-3.5 w-3.5" />
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={() => onChange(undefined)}
-            aria-label={`Remove ${def.label}`}
-            className={`shrink-0 rounded-lg p-0.5 text-ink-mute hover:bg-white ${staged.status === "error" ? "ml-auto" : ""}`}
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
+          <CheckCircle2 className="h-4 w-4" />
         </span>
       )}
-    </label>
+      <label className="block text-sm font-bold">
+        {def.label}
+        <input
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.webp,.docx,.txt,.doc,.rtf,.ppt,.pptx,.xls,.xlsx"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) handleFile(file);
+            e.target.value = "";
+          }}
+          className={`mt-1.5 w-full cursor-pointer rounded-xl border px-4 py-3 text-xs font-medium transition-colors file:mr-3 file:rounded-full file:border-0 file:bg-doc file:px-4 file:py-1.5 file:text-xs file:font-bold file:text-white hover:border-study ${
+            isReady ? "border-solid border-success/40 bg-success/5" : isError ? "border-dashed border-urgent/40 bg-red-50" : "border-dashed border-line bg-surface"
+          }`}
+        />
+        <span className="mt-1 block text-[11px] font-medium text-ink-soft">{def.hint}</span>
+        {staged && (
+          <span
+            className={`mt-1 flex items-center gap-1.5 text-[11px] font-semibold ${
+              isError ? "text-urgent" : isReady ? "text-success" : "text-study"
+            }`}
+          >
+            {thumbUrl && <img src={thumbUrl} alt="" className="h-6 w-6 shrink-0 rounded-md border border-line object-cover" />}
+            {staged.status === "converting" && <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin" aria-hidden="true" />}
+            {isError && <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />}
+            <span className="truncate">{isError ? staged.errorMessage : staged.file.name}</span>
+            {!isError && (
+              <button
+                type="button"
+                onClick={openPreview}
+                aria-label={`Preview ${def.label}`}
+                className="ml-auto shrink-0 rounded-lg p-0.5 text-study hover:bg-white"
+              >
+                <Eye className="h-3.5 w-3.5" />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => onChange(undefined)}
+              aria-label={`Remove ${def.label}`}
+              className={`shrink-0 rounded-lg p-0.5 text-ink-mute hover:bg-white ${isError ? "ml-auto" : ""}`}
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </span>
+        )}
+      </label>
+    </div>
   );
 }
