@@ -40,15 +40,22 @@ of your own to run.
 
 1. Open `apps-script/Code.gs` in this repo and edit the `ADMIN_EMAIL`
    constant near the top to the real admissions inbox.
-2. Go to [script.google.com](https://script.google.com) and sign in with
+2. Every application is filed into one fixed Drive folder (destination
+   subfolder, then one folder per applicant), set via `ROOT_FOLDER_ID` near
+   the top of `Code.gs`. Make sure the Google account you deploy as (step 4)
+   has **Editor** access to that folder — either it owns the folder, or the
+   folder's been shared with it as an editor. Change `ROOT_FOLDER_ID` if you
+   ever want applications to land somewhere else (the ID is the string in
+   the folder's URL: `drive.google.com/drive/folders/<this part>`).
+3. Go to [script.google.com](https://script.google.com) and sign in with
    the Gmail account that inbox belongs to.
-3. **New Project** → delete the default code → paste in the entire contents
+4. **New Project** → delete the default code → paste in the entire contents
    of `apps-script/Code.gs`.
-4. **Deploy → New deployment** → type **Web app** → Execute as **Me** → Who
+5. **Deploy → New deployment** → type **Web app** → Execute as **Me** → Who
    has access **Anyone** → **Deploy**. Authorize the permissions it asks for
    (Drive + Gmail access) — that's expected, it's what lets the script save
    files and send mail.
-5. Copy the Web App URL (starts with
+6. Copy the Web App URL (starts with
    `https://script.google.com/macros/s/.../exec`).
 
 ### Connecting the URL

@@ -3,8 +3,10 @@
  *
  * Deploy: script.google.com → New Project → paste this whole file over the
  * default code → Deploy → New deployment → type "Web app" → Execute as "Me"
- * → Who has access "Anyone" → Deploy. Paste the resulting Web App URL into
- * the site's Setup modal.
+ * → Who has access "Anyone" → Deploy. The account you deploy as needs
+ * Editor access to the Drive folder in ROOT_FOLDER_ID below. Set the
+ * resulting Web App URL as the site's VITE_APPS_SCRIPT_URL env var (or,
+ * for local testing, the dev-only Setup modal).
  *
  * What it does on each submission:
  *  1. Creates (or reuses) a Drive folder for the applicant.
@@ -16,7 +18,11 @@
 
 const ADMIN_EMAIL = "competenza.global@gmail.com";
 
-const ROOT_FOLDER_NAME = "CompeTenza Applications";
+// Every application is filed under this exact Drive folder (destination
+// subfolder, then one folder per applicant) instead of an auto-created one.
+// Taken from https://drive.google.com/drive/folders/1Velc41WrdDn6kUmOkdjR_e6nPhYs2l8S
+// The account this is deployed as ("Execute as: Me") needs Editor access to it.
+const ROOT_FOLDER_ID = "1Velc41WrdDn6kUmOkdjR_e6nPhYs2l8S";
 
 function doPost(e) {
   try {
@@ -50,7 +56,7 @@ function doGet() {
 }
 
 function getOrCreateApplicantFolder(applicant) {
-  const root = getOrCreateFolder(DriveApp.getRootFolder(), ROOT_FOLDER_NAME);
+  const root = DriveApp.getFolderById(ROOT_FOLDER_ID);
   const destinationFolder = getOrCreateFolder(root, applicant.destination || "Unspecified");
   const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd HHmm");
   const ref = applicant.referenceId ? applicant.referenceId + " — " : "";
