@@ -14,8 +14,7 @@
  *  4. Emails the applicant a confirmation.
  */
 
-// TODO: set this to the inbox that should receive new applications.
-const ADMIN_EMAIL = "admissions@competenza.example";
+const ADMIN_EMAIL = "competenza.global@gmail.com";
 
 const ROOT_FOLDER_NAME = "CompeTenza Applications";
 
