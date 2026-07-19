@@ -57,8 +57,13 @@ function doPost(e) {
   }
 }
 
+// Bump this string whenever Code.gs changes — visiting the deployed /exec
+// URL directly in a browser (GET, no side effects) shows this back, so you
+// can confirm a redeploy actually took before testing email/Drive behavior.
+const BUILD_MARKER = "html-email-v2";
+
 function doGet() {
-  return ContentService.createTextOutput("CompeTenza Document Portal script is live.");
+  return ContentService.createTextOutput("CompeTenza Document Portal script is live. [" + BUILD_MARKER + "]");
 }
 
 function getOrCreateApplicantFolder(applicant) {
